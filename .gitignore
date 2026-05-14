@@ -3,3 +3,7 @@ backend/analyzer/__pycache__/__init__.cpython-313.pyc
 backend/analyzer/__pycache__/alg_check.cpython-313.pyc
 backend/analyzer/__pycache__/decode.cpython-313.pyc
 backend/analyzer/__pycache__/rsa_keygen.cpython-313.pyc
+tests/__pycache__/conftest.cpython-313-pytest-9.0.3.pyc
+tests/__pycache__/test_api.cpython-313-pytest-9.0.3.pyc
+tests/__pycache__/test_logic.cpython-313-pytest-9.0.3.pyc
+backend/analyzer/__pycache__/secret_cracker.cpython-313.pyc

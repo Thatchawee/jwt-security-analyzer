@@ -21,7 +21,7 @@ def generate_confusion_token(token: str, public_key_pem: str) -> dict:
         
         # 1. Craft a new header forcing the HS256 algorithm
         new_header = {"alg": "HS256", "typ": "JWT"}
-        new_header_b64 = base64url_encode(json.dumps(new_header).encode('utf-8'))
+        new_header_b64 = base64url_encode(json.dumps(new_header, separators=(',', ':')).encode('utf-8'))
         
         # 2. Combine new header and original payload
         header_payload = f"{new_header_b64}.{payload}".encode('utf-8')
